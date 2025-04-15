@@ -31,7 +31,7 @@ def generate_launch_description():
             actions=[
                 ExecuteProcess(
                     cmd=['ros2', 'launch', 'turtlebot3_navigation2', 'navigation2.launch.py', 
-                         'use_sim_time:=True', 'map:=my_map.yaml','params_file:=param1.yaml'],
+                         'use_sim_time:=True', 'map:=./src/turtlebot3_sim/maps/my_map.yaml','params_file:=./src/turtlebot3_sim/paramy/param1.yaml'],
                     output='screen',
                     name='navigation2',
                     on_exit=Shutdown()

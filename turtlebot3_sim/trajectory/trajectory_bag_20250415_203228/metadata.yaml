@@ -2,25 +2,25 @@ rosbag2_bagfile_information:
   version: 5
   storage_identifier: sqlite3
   duration:
-    nanoseconds: 18300000000
+    nanoseconds: 22400000000
   starting_time:
-    nanoseconds_since_epoch: 12400000000
-  message_count: 21
+    nanoseconds_since_epoch: 13000000000
+  message_count: 51
   topics_with_message_count:
     - topic_metadata:
         name: /trajectory
         type: geometry_msgs/msg/PoseStamped
         serialization_format: cdr
         offered_qos_profiles: ""
-      message_count: 21
+      message_count: 51
   compression_format: ""
   compression_mode: ""
   relative_file_paths:
-    - trajectory_bag_20250413_140420_0.db3
+    - trajectory_bag_20250415_203228_0.db3
   files:
-    - path: trajectory_bag_20250413_140420_0.db3
+    - path: trajectory_bag_20250415_203228_0.db3
       starting_time:
-        nanoseconds_since_epoch: 12400000000
+        nanoseconds_since_epoch: 13000000000
       duration:
-        nanoseconds: 18300000000
-      message_count: 21
+        nanoseconds: 22400000000
+      message_count: 51
