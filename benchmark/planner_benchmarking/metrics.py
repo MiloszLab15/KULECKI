@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 # Copyright 2022 Joshua Wallace
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,23 +27,23 @@ import rclpy
 from transforms3d.euler import euler2quat
 
 
-# def getPlannerResults(navigator, initial_pose, goal_pose, planners):
-#     results = []
-#     for planner in planners:
-#         path = navigator._getPathImpl(initial_pose, goal_pose, planner, use_start=True)
-#         if path is not None and path.error_code == 0:
-#             results.append(path)
-#         else:
-#             print(planner, 'planner failed to produce the path')
-#             return results
-#     return results
 def getPlannerResults(navigator, initial_pose, goal_pose, planners):
     results = []
     for planner in planners:
         try:
+            start_time = time.time()
             path = navigator.getPath(initial_pose, goal_pose, planner_id=planner)
+            end_time = time.time()
+            planning_time = end_time - start_time  # Time in seconds
             if path is not None and len(path.poses) > 0:
-                results.append(path)
+                # Store both path and planning time
+                results.append({
+                    'path': path,
+                    'planning_time': {
+                        'sec': int(planning_time),
+                        'nanosec': int((planning_time % 1) * 1e9)
+                    }
+                })
             else:
                 print(f"{planner} planner failed to produce a valid path")
                 return results
@@ -120,9 +120,9 @@ def main():
     costmap = np.asarray(costmap_msg.data)
     costmap.resize(costmap_msg.metadata.size_y, costmap_msg.metadata.size_x)
 
-    planners = ['ThetaStar','Navfn', 'SmacHybrid', 'Smac2d', 'SmacLattice']
+    planners = ['ThetaStar', 'SmacHybrid', 'Smac2d', 'SmacLattice']
     max_cost = 50
-    side_buffer = 100
+    side_buffer = 10
     time_stamp = navigator.get_clock().now().to_msg()
     results = []
     seed(33)
@@ -142,12 +142,6 @@ def main():
             i = i + 1
         else:
             print('One of the planners was invalid')
-        # if len(result) > 0:  # Accept if at least one planner succeeds
-        #     results.append(result)
-        #     i = i + 1
-        #     print(f"Cycle {i} completed with {len(result)}/{len(planners)} planners succeeding")
-        # else:
-        #     print("No planners produced a valid path")
 
     print('Write Results...')
     with open(os.getcwd() + '/results.pickle', 'wb+') as f:

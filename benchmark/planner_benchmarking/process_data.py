@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 # Copyright 2022 Joshua Wallace
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,34 +26,25 @@ from tabulate import tabulate
 def getPaths(results):
     paths = []
     for result in results:
-        for path in result:
-            paths.append(path.path)
+        for item in result:
+            if 'path' in item:
+                paths.append(item['path'])
+            else:
+                print("Warning: Skipping item with no path")
     return paths
-# def getPaths(results):
-#     paths = []
-#     for result in results:
-#         for item in result:
-#             if item is not None and 'path' in item and len(item['path'].poses) > 0:
-#                 paths.append(item['path'])
-#             else:
-#                 print("Skipping invalid or empty path")
-#     return paths
+
 
 def getTimes(results):
     times = []
     for result in results:
-        for time in result:
-            times.append(time.planning_time.nanosec / 1e09 + time.planning_time.sec)
+        for item in result:
+            if 'planning_time' in item:
+                times.append(item['planning_time']['sec'] + item['planning_time']['nanosec'] / 1e9)
+            else:
+                print("Warning: Skipping item with no planning_time")
+    if not times:
+        print("Warning: No valid timing data found in results")
     return times
-# def getTimes(results):
-#     times = []
-#     for result in results:
-#         for item in result:
-#             if item is not None and 'planning_time' in item:
-#                 times.append(item['planning_time'])
-#             else:
-#                 print("Skipping invalid or empty result")
-#     return times
 
 
 def getMapCoordsFromPaths(paths, resolution):
@@ -142,7 +133,6 @@ def maxPathCost(paths, costmap, num_of_planners):
 
 
 def main():
-
     print('Read data')
     with open(os.getcwd() + '/results.pickle', 'rb') as f:
         results = pickle.load(f)
@@ -165,9 +155,13 @@ def main():
     path_lengths = path_lengths.transpose()
 
     times = getTimes(results)
-    times = np.asarray(times)
-    times.resize((int(total_paths / len(planners)), len(planners)))
-    times = np.transpose(times)
+    times_available = len(times) > 0
+    if times_available:
+        times = np.asarray(times)
+        times.resize((int(total_paths / len(planners)), len(planners)))
+        times = np.transpose(times)
+    else:
+        print("Skipping timing-related calculations due to missing data")
 
     # Costs
     average_path_costs = np.asarray(averagePathCost(paths, costmap, len(planners)))
@@ -178,7 +172,7 @@ def main():
         [
             'Planner',
             'Average path length (m)',
-            'Average Time (s)',
+            'Average Time (s)' if times_available else 'Average Time (s) [N/A]',
             'Average cost',
             'Max cost',
         ]
@@ -189,7 +183,7 @@ def main():
             [
                 planners[i],
                 np.average(path_lengths[i]),
-                np.average(times[i]),
+                np.average(times[i]) if times_available else 'N/A',
                 np.average(average_path_costs[i]),
                 np.average(max_path_costs[i]),
             ]

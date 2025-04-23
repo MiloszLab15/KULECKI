@@ -26,7 +26,12 @@ class TurtleBot3Sim(Node):
         self.current_pose = None
         self.dodatek_x = 2.1 #offsety
         self.dodatek_y = 0.6
-
+        self.declare_parameter('goal_x')
+        self.declare_parameter('goal_y')
+        self.declare_parameter('goal_yaw')
+        self.goal_x = self.get_parameter('goal_x').get_parameter_value().double_value
+        self.goal_y = self.get_parameter('goal_y').get_parameter_value().double_value
+        self.goal_yaw = self.get_parameter('goal_yaw').get_parameter_value().double_value
         timestamp = time.strftime("%Y%m%d_%H%M%S")#żeby mieć unikalną nazwę rosbag bo się wysypuje inaczej
         bag_dir = f'./src/turtlebot3_sim/trajectory/trajectory_bag_{timestamp}'
         storage_options = rosbag2_py.StorageOptions(uri=bag_dir, storage_id='sqlite3')#format dla ros2
@@ -188,7 +193,12 @@ def main(args=None):
     try:
         if node.set_initial_pose_from_current():
             time.sleep(2.0)  # Allow Nav2 to stabilize
-            node.set_goal_pose(0.4 + node.dodatek_x, 0.6 + node.dodatek_y, 0.0)
+            # Use parameters for goal pose
+            node.set_goal_pose(
+                node.goal_x + node.dodatek_x,
+                node.goal_y + node.dodatek_y,
+                node.goal_yaw
+            )
         
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=0.01)
