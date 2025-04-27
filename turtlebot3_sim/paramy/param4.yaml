@@ -111,6 +111,7 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 
 controller_server:
   ros__parameters:
+    logger_level: "debug"
     use_sim_time: True
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
@@ -275,15 +276,19 @@ map_saver:
 
 planner_server:
   ros__parameters:
-    expected_planner_frequency: 20.0
+    logger_level: "debug"
     use_sim_time: True
-    planner_plugins: ["GridBased"]
+    planner_plugin_types: ["nav2_theta_star_planner::ThetaStarPlanner"]
+    planner_plugin_ids: ["GridBased"]
     GridBased:
-      plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.5
-      use_astar: false
-      allow_unknown: true
-
+      how_many_corners: 4 
+      #może być 4 albo 8 tylko prawdopodobnie z powodu badania sąsiadów
+      w_euc_cost: 3.0 
+      #kara na długośc ścieżki nie można dawać zbyt dużej ponieważ on zbyt mocno myśli o najkrótszej ściezce przez co zmienia plany zbyt czesto
+      w_traversal_cost: 1.0 
+      #waga na omijanie przeszkód w bezpieczny sposób im wyższa tym jakby bardziej zachowawczo wymija z odpowiednim dystansem
+      #im mniejszy ten parametr tym bardziej agresywnie jeździ 
+      #trajektoria bedzie nazywana w kolejności parametrów czyli np. trajectory_bag_2.53_0.67_param4_8_1_2 to znaczy param4 8 corners 1 euc_cost 2 traversal_cost
 smoother_server:
   ros__parameters:
     use_sim_time: True

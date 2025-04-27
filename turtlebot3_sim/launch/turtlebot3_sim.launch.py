@@ -49,6 +49,7 @@ def generate_launch_description():
                     cmd=['ros2', 'launch', 'turtlebot3_navigation2', 'navigation2.launch.py',
                          'use_sim_time:=True',
                          ['map:=',map_file],
+                         #['params_file:=/home/kamil/Kamil_studia/MiAPR_lab/projekt_miapr/src/turtlebot3_sim/paramy/nav2_params.yaml']],
                          ['params_file:=',params_file]],
                     output='screen',
                     name='navigation2',

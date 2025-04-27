@@ -30,21 +30,28 @@ def read_messages(input_bag: str):
     del reader
 
 def main():
-    x_coords = []
-    y_coords = []
-    
-    # Iterate over all messages from the bag file
-    for topic, msg, timestamp in read_messages('trajectory_bag_20250413_140420'):
-        # Assuming msg has pose.position.x and pose.position.y
-        x_coords.append(msg.pose.position.x)
-        y_coords.append(msg.pose.position.y)
+
+    bagi = ['trajectory_bag_2.53_0.67_param4_8_1_2','trajectory_bag_2.53_0.67_param4_4_1_2','trajectory_bag_2.53_0.67_param4_4_10_2',
+            'trajectory_bag_2.53_0.67_param4_4_1_20']
+    for bags in bagi:
+        x1_coords = []
+        y1_coords = []
+        label = '_'.join(bags.split('_')[-3:])
+        # Iterate over all messages from the bag file
+        for topic, msg, timestamp in read_messages('trajectory/'+bags):
+            # Assuming msg has pose.position.x and pose.position.y
+            x1_coords.append(msg.pose.position.x)
+            y1_coords.append(msg.pose.position.y)
+        # Iterate over all messages from the bag file
     
     # Plot the trajectory
-    plt.plot(x_coords, y_coords)
+        plt.plot(x1_coords, y1_coords,label=label)
+    plt.legend()
     plt.xlabel('X Position')
     plt.ylabel('Y Position')
-    plt.title('Robot Trajectory')
+    plt.title('Robot Trajectory x:2.53 y:0.67 ThetaStarPlanner')
     plt.grid(True)
+    plt.savefig('Robot Trajectory x:2.53 y:0.67 ThetaStarPlanner.png')
     plt.show()
 
 if __name__ == "__main__":

@@ -111,6 +111,7 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 
 controller_server:
   ros__parameters:
+    logger_level: "debug"
     use_sim_time: True
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
@@ -276,6 +277,7 @@ map_saver:
 planner_server:
   ros__parameters:
     expected_planner_frequency: 20.0
+    logger_level: "debug" # Enable metrics publishing
     use_sim_time: True
     planner_plugins: ["GridBased"]
     GridBased:
@@ -311,7 +313,7 @@ planner_server:
         max_iterations: 1000
         w_smooth: 0.3
         w_data: 0.2
-        tolerance: 1.0e-10
+        tolerance: 1.0e-5
         do_refinement: true        
 
 smoother_server:
